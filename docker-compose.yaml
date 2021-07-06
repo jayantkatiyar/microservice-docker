@@ -1,0 +1,65 @@
+version: '3.7'
+services: 
+   #IMAGE SHOULD SAME AS WRITTEN IN DOCKER IMAGES SO CHECK AND WRITE
+    eureka-server:
+        image: eureka-server
+        ports: 
+            - "8761:8761"
+        restart: always
+       
+        networks:
+            - app-network
+    #IMAGE SHOULD SAME AS WRITTEN IN DOCKER IMAGES SO CHECK AND WRITE
+    #ENVIRONMENTS ARE GIVEN AS PER THE APPLICATION.PROPERTIES FILE
+    #DEPENDS ON EUREKA SAYS THAT THIS APPLICATION ALWAYS RUN AFTER EUREKA SERVER STARTS
+    account:
+      #NAME ACCORDING TO APPLICATION>PROPERTIES
+        image: account-service
+        ports: 
+            - "8081:8081"
+        restart: always
+        environment:
+            EUREKA_HOST: eureka-server
+            EUREKA_PORT: 8761
+                
+        depends_on:
+            - eureka-server
+        networks:
+            - app-network
+     #IMAGE SHOULD SAME AS WRITTEN IN DOCKER IMAGES SO CHECK AND WRITE
+    
+    #ENVIRONMENTS ARE GIVEN AS PER THE APPLICATION.PROPERTIES FILE
+    #DEPENDS ON EUREKA SAYS THAT THIS APPLICATION ALWAYS RUN AFTER EUREKA SERVER STARTS
+    loan:
+        #image: loan
+        image: loan-service
+        ports: 
+            - "8082:8082"
+        restart: always
+        environment:
+            EUREKA_HOST: eureka-server
+            EUREKA_PORT: 8761
+        depends_on:
+            - eureka-server
+        networks:
+            - app-network
+    #IMAGE SHOULD SAME AS WRITTEN IN DOCKER IMAGES SO CHECK AND WRITE
+    #ENVIRONMENTS ARE GIVEN AS PER THE APPLICATION.PROPERTIES FILE
+    #DEPENDS ON EUREKA SAYS THAT THIS APPLICATION ALWAYS RUN AFTER EUREKA SERVER STARTS
+    zuul-gateway:
+        #image: zuul-gate
+        image: zuul-gateway-service
+        ports: 
+            - "8084:8084"
+        restart: always
+        environment:
+            EUREKA_HOST: eureka-server
+            EUREKA_PORT: 8761
+        depends_on:
+            - eureka-server
+        networks:
+            - app-network
+    
+# Networks to be created to facilitate communication between containers
+networks:
+    app-network:  
